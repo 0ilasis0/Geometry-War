@@ -18,10 +18,10 @@
             "unlock",
             "unlock",
             "unlock",
-            "unlock",
-            "unlock",
-            "unlock",
-            "unlock"
+            "lock",
+            "lock",
+            "lock",
+            "lock"
         ]
     },
     "RANK": {
