@@ -1,0 +1,46 @@
+{
+    "SYS_CONFIG": {
+        "sys_select_song": [
+            0
+        ],
+        "sys_volume": [
+            0
+        ],
+        "sys_window_scale": [
+            1
+        ]
+    },
+    "SINGLE_MENU": {
+        "level_grid": [
+            "unlock",
+            "lock",
+            "lock",
+            "lock",
+            "lock",
+            "lock",
+            "lock",
+            "lock",
+            "lock",
+            "lock"
+        ]
+    },
+    "RANK": {
+        "display": {
+            "rank_0": [
+                2,
+                12,
+                752
+            ],
+            "rank_1": [
+                0,
+                17,
+                1
+            ],
+            "rank_2": [
+                0,
+                0,
+                0
+            ]
+        }
+    }
+}
