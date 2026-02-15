@@ -42,7 +42,6 @@
 ![screenshot3](screenshot/screenshot3.png)
 ![screenshot4](screenshot/screenshot4.png)
 ![screenshot5](screenshot/screenshot5.png)
-![screenshot6](screenshot/screenshot6.png)
 
 ---
 

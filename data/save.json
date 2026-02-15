@@ -7,21 +7,21 @@
             0
         ],
         "sys_window_scale": [
-            1
+            0
         ]
     },
     "SINGLE_MENU": {
         "level_grid": [
             "unlock",
-            "lock",
-            "lock",
-            "lock",
-            "lock",
-            "lock",
-            "lock",
-            "lock",
-            "lock",
-            "lock"
+            "unlock",
+            "unlock",
+            "unlock",
+            "unlock",
+            "unlock",
+            "unlock",
+            "unlock",
+            "unlock",
+            "unlock"
         ]
     },
     "RANK": {
