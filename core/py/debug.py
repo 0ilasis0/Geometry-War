@@ -116,7 +116,7 @@ class Debug:
     def toggle(self):
         self.enable = not self.enable
 
-dbg = Debug()
+dbg = Debug(False)
 
 
 

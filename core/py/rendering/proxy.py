@@ -52,7 +52,7 @@ class RenderProxy:
         sorted_zones = sorted(cls._active_click_zones, key = itemgetter(0))
         mx, my = mouse_pos
 
-        dbg.log(f"--- Click Test at {mouse_pos} | Total Zones: {len(sorted_zones)}:{sorted_zones} ---")
+        # dbg.log(f"--- Click Test at {mouse_pos} | Total Zones: {len(sorted_zones)}:{sorted_zones} ---")
 
         for _, rect, item, is_circle, radius_sq in reversed(sorted_zones):
             if not rect.collidepoint(mouse_pos): continue
