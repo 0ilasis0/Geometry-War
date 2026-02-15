@@ -1,16 +1,14 @@
 # 俄羅斯方塊（Tetris）遊戲專案
 
-此專題為作者於自學 **Python 與 Pygame** 時所開發的一個完整 Tetris 遊戲。
-專案重點在 **遊戲機制** 與 **系統化設計**，主要特色如下：
+此專題為作者於自學 **Python 、 AI 與 C 進行偕同運作** 時所開發的一個完整塔防策略遊戲。
+專案重點在於 **底層遊戲引擎架構的實現** 與 **系統模組化設計**，主要特色如下：
 
-- 單人、雙人（同機）、無盡三種遊戲模式
-- 對戰攻擊 / 垃圾列系統（含地雷、KO 判定）
-- 等級（難度）管理：依分數或時間改變下落速度與垃圾行為
-- 模組化資源管理：Layout、Screen、Font、Song
-- 遊戲資料持久化：排行榜、選曲、音量設定儲存為 JSON
-- 除錯輸出工具（dbg）、頁面導覽堆疊（Stack）
-
-> 📌 除了完整遊戲，本 repo 亦保留部分學習練習檔（與主專題無關）。
+- 網格化建造系統：自定義防禦塔位置與策略佈局
+- 所見即所得 (WYSIWYG) 互動系統：解決 UI 遮擋與點擊穿透問題
+- 資料驅動設計 (Data-Driven)：UI 佈局與文字內容皆由 JSON 動態載入
+- 模組化資源管線：自動化 Sprite 切割、圖片變換與快取管理
+- 分層渲染架構：基於 Z-Index 的渲染隊列管理
+- 除錯輸出工具（dbg）、頁面狀態管理（PageStateManager）
 
 ---
 
@@ -18,97 +16,111 @@
 
 ```text
 
-core/
-├── base/                # Stack、ClockTimer、全域工具
-├── debug/               # dbg：開發用除錯輸出工具
-├── font/                # 字型 JSON 載入與渲染、文字管理
-├── hmi/                 # SONG、RANK、BaseManager（狀態/介面抽象）
-├── keyboard/            # 鍵盤輸入映射、游標 hook 管理
-├── location_layout/     # 版面配置（LayoutManager、LayoutItem）
-├── page/                # 頁面管理、導航與 boot 流程
-├── screen/              # 螢幕初始化、背景與圖片管理、繪圖管理
-├── tetris_game/         # 遊戲核心（Tetromino, Field, TetrisCore, Attack, Level, Mode）
-│   ├── attack/          # 對戰系統（Attack, BattleManager）
-│   ├── level/           # 等級/難度管理
-│   └── mode/            # single/double/endless 三種模式邏輯
-├── variable.py          # 全域路徑、顏色、PageTable、JsonPath 等
-Tetris.py                # 遊戲啟動與主迴圈（exe 起點）
-Tetris.exe               # 已打包為可執行檔
+Geometry War/
+├── background/             # 遊戲背景圖片資源
+├── core/                   # 核心程式碼庫
+│   ├── c_inc/              # C 語言標頭檔 (Headers)
+│   ├── c_src/              # C 語言原始碼
+│   │   └── a_star/         # 高效能 A* 路徑搜尋演算法實作
+│   ├── dll/                # 編譯完成的動態連結庫 (a_star.dll)
+│   ├── py/                 # Python 模組與管理器
+│   │   ├── a_star/         # Python 對 C DLL 的介接層 (ctypes wrapper)
+│   │   ├── font/           # 字型管理器 (FontManager)
+│   │   ├── game/           # 遊戲核心邏輯 (Building, Enemy, Tower)
+│   │   ├── hmi/            # 人機介面 (Human-Machine Interface)
+│   │   ├── input/          # 輸入處理 (Mouse, Keyboard)
+│   │   ├── json/           # JSON 設定檔讀取與解析
+│   │   ├── page/           # 頁面狀態機與導航 (PageStateManager)
+│   │   ├── path/           # 路徑管理與運算
+│   │   ├── rendering/      # 渲染核心 (RenderProxy, RenderManager)
+│   │   ├── resource/       # 資源載入器
+│   │   ├── screen/         # 螢幕顯示管理 (ImgManager, DrawManager)
+│   │   ├── trans/          # 轉場效果處理
+│   │   ├── ui_layout/      # UI 佈局系統 (LayoutManager)
+│   │   ├── compile_dll.py  # C 語言自動編譯腳本
+│   │   └── ...             # 基礎模組 (base, debug, variable, interrupt 等)
+│   └── game_main.py        # Python 原始碼進入點 (Entry Point)
+├── data/                   # 遊戲數值與設定資料 (JSON)
+├── font/                   # 字體檔案 (.ttf, .otf)
+├── img/                    # 遊戲 Sprite 圖片素材
+├── screenshot/             # README 展示用截圖
+├── song/                   # 音效與背景音樂資源
+├── game_main.exe           # 已打包的可執行檔 (Windows Build)
+├── images.ico              # 程式圖示
+└── README.md               # 專案說明文件
 
 ```
 
 
 # 🎮 主要功能
 
-## 單人模式
-- 可依照自身程度選擇難度，算是熱身環節
+## 塔防戰鬥機制
+- 網格建造：玩家需在有限的地圖網格上，策略性地配置防禦塔。
+- 敵人 AI：敵人會根據路徑動態移動，並具備不同的屬性（速度、血量）。
+- 資源管理：透過擊敗敵人或建造生產單位獲取資源，用於升級或建造更多防禦。
 
-## 雙人同機對戰
-- 兩位玩家各自操作，落地與連擊會產生攻擊值。
-- 攻擊差由系統自動轉換成垃圾列。
-- **KO**：當玩家頂端遭到堵塞時會被擊敗一次，當被擊敗三次時，判斷為該玩家失敗並結束遊戲。
-- **攻擊機制**：當連續消除方塊或同時多消時會觸發攻擊，此攻擊會增加對方的垃圾列
-- **地雷機制**：垃圾列並不是無法移除，將方塊放置在垃圾列中其中一個地雷上會觸發消除整列垃圾方塊
+# ⚙️ 核心特性
+- 混合語言架構 (Hybrid Architecture)：Python 負責邏輯與渲染，C 語言負責密集運算 (A*)。
+- 資料驅動 (Data-Driven)：UI 佈局、文字內容、關卡設定皆由 JSON 動態載入。
+- 所見即所得 (WYSIWYG)：解決 UI 遮擋與點擊穿透問題的互動系統。
 
-## 無盡模式
-- 隨著分數分數增加，難度會隨著增長，可一次體驗單人模式的地一道第十關，適合長時間挑戰。
+# 💡 技術亮點 (Technical Highlights)
+1. Python/C 混合編程 (C Extensions)
+為了突破 Python 在大量迴圈運算上的效能瓶頸，本專案將 A (A-Star) 路徑搜尋演算法* 使用 C 語言重寫。
 
-## 方塊控制
-- **移動**：`←` `→`
-- **旋轉**：`↑`
-- **加速下落**：`↓`
-- **立即落下**：`Space`
-- **儲存方塊 (Hold)**：`LCtrl`
-> 雙人模式的各自操作已經在遊戲中遊戲說明的部分解釋了
+原始碼：位於 core/c_src/a_star/
+
+整合方式：編譯為 core/dll/a_star.dll，並透過 ctypes 與 Python 介接。
+
+效益：大幅提升了敵人尋路與大量單位移動的運算效率。
+
+2. 渲染代理 (Render Proxy) - 解決點擊穿透
+實作 Render-as-Registration (渲染即註冊) 機制解決 UI 互動問題：
+
+機制：每一幀繪製時，物件將自身的 Collision Rect 與 Z-Index 註冊到 RenderProxy。
+
+判定：點擊時，代理器反向遍歷（Reversed Z-Order）判定最上層物件。
+
+結果：徹底根除「點擊到被遮擋物件」的 Bug，實現精確的滑鼠互動。
+
+3. 自動化資源管線
+ImgManager：實作 Sprite Sheet 自動切割、圖片動態變換 (Scale/Rotate) 與雜湊快取 (Hash Caching)。
+
+FontManager：支援多語言 JSON 對照與排版渲染。
 
 ---
 
 # ⌨️ 操作說明（預設鍵位）
-- `← / → / ↓ / ↑ `：移動當前選項
-- `BackSpace`：退回上一頁
-- `Enter`：確認 / 前進
+1. 滑鼠左鍵：
+- 選擇單位 / 建造塔樓。
+- 點擊 UI 按鈕。
+
+2. 滑鼠右鍵：
+- 取消選擇 / 移除建築。
+- 方向鍵：設定選項或選取移動。
+
+3. BackSpace
+- 返回上一頁。
+
+4. Enter
+- 確認選取
 
 ---
 
 # 🚀 如何執行
-1. 直接執行可執行檔（推薦）
-進入 Tetris_program-exe 資料夾
-雙擊 Tetris.exe 執行（Windows）
+## 方式一：直接執行 (Windows)
+雙擊根目錄下的 game_main.exe 即可直接遊玩，無需安裝 Python 環境。
 
-2. 以原始碼執行（開發者）
-安裝相依套件 `pip install pygame`
-並在**Tetris_program-exe**專案根目錄執行 `python Tetris.py`
+## 方式二：從原始碼執行 (開發者)
+1. 環境需求
+Python 3.10+
+GCC 編譯器 (若需重新編譯 DLL)
 
----
+2. 安裝依賴
+pip install pygame-ce
 
-# ⚙️ 程式設計重點
-- 方塊與碰撞
-方塊以 4×4 模板定義，每次旋轉只改變 rotation index。
-
-碰撞檢查遍歷 4×4 格子，檢查邊界與場地佔用。
-
-- 旋轉（Wall-kick）
-碰撞時嘗試左右位移，若仍衝突則回滾旋轉。
-
-- 消行與分數
-Field.clear_lines() 掃描滿行 → 消除 → 補空行 → 回傳行數。
-
-- 分數依 消行數 + combo 加權計算。
-
-- 對戰系統
-消行或 combo 產生攻擊 → 攻擊差轉換成垃圾列。
-
-- 垃圾列可含隨機地雷（踩中觸發特殊效果）。
-
-- 等級管理
-LevelManager 根據分數或時間提升難度。
-
-- 無盡模式會定時生成垃圾列。
-
-- UI 與版面
-LayoutManager 與 LayoutCollection 管理遊戲畫面結構。
-
-DrawManager 將繪圖指令集中處理，分靜態/動態渲染。
+3. 執行遊戲
+python core/game_main.py
 
 ---
 
@@ -120,15 +132,6 @@ DrawManager 將繪圖指令集中處理，分靜態/動態渲染。
 - 演算法：碰撞、旋轉、消行、combo、攻擊轉換與垃圾列生成。
 
 - 學習取向：涵蓋遊戲開發常見面向（事件循環、狀態機、資料管理）。
-
-
-# 📖 參考與除錯
-開發環境需安裝 pygame
-
-資源檔案：data/, img/, font/, song/
-
-除錯：dbg.toggle() 開/關 debug 輸出，追蹤函式呼叫與參數
-
 
 
 # 🖼️ 截圖展示
