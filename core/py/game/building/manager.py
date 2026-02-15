@@ -254,7 +254,7 @@ class BuildingManager:
                     color = LabConfig.SKILL[skill].get(LabConfigKey.COLOR)
 
                     draw_mg.add_form(
-                        draw_id = DrawID.GAME_PROGRESS_BAR,
+                        draw_id = DrawID.GAME_PROGRESS_BAR_COLOR,
                         override_pos = ui_item.pos,
                         offset_pos = location_config.game.progress_bar_draw_offset,
                         override_size = Size(progress_rate, progress_bar_height),

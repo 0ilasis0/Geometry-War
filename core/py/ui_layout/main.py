@@ -357,6 +357,14 @@ class LayoutCollection:
             ),
             z = PosZLayer.TEXT.value
         )
+        self.game_progress_bar_color = self.lay_mg.add_item(
+            item = self._create_item(
+                category = page,
+                name = LayoutName.GAME_PROGRESS_BAR_COLOR,
+                size = location_config.game.progress_bar_size
+            ),
+            z = PosZLayer.UI_ELEMENT.value,
+        )
         self.game_progress_bar = self.lay_mg.add_item(
             item = self._create_item(
                 category = page,

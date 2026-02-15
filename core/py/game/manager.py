@@ -143,8 +143,7 @@ class GameManager:
             # =========================================================
             # [過濾器] 如果是多選/拖曳模式，到這裡就停止，不渲染詳細菜單
             # =========================================================
-            if is_multi_mode:
-                continue
+            if is_multi_mode: continue
 
             # =========================================================
             # [單選專用] 詳細 UI (狀態欄、升級按鈕、變身按鈕)
@@ -172,15 +171,16 @@ class GameManager:
 
             # --- 升級符號/價格文字 ---
             if building_stats.level < building_stats.max_level:
+                upgrade_pos = layout_mg.get_item_pos(GameContext.page, LayoutName.GAME_UPGRADE_USER)
                 layout_mg.update_item_pos(
                     page = self.current_page,
                     name = LayoutName.GAME_UPGRADE_USER,
-                    pos = item_pos,
+                    pos = Position(item_pos.x, item_pos.y, upgrade_pos.z),
                     offset_pos = location_config.game.upgrade_user_offset
                 )
                 img_mg.draw_image_dynamic(
                     image_id = LayoutName.GAME_UPGRADE_USER,
-                    pos = item_pos,
+                    pos = Position(item_pos.x, item_pos.y, upgrade_pos.z),
                     offset_pos = location_config.game.upgrade_user_offset
                 )
                 font_mg.draw_text(
@@ -192,6 +192,7 @@ class GameManager:
 
             # --- 原形建築變身符號/價格文字 ---
             if building_stats.arch == GameType.Arch.PROTOTYPE:
+                become_pos = layout_mg.get_item_pos(GameContext.page, LayoutName.GAME_BECOME.serial_list[0])
                 for index, (target_arch, data) in enumerate(PrototypeConfig.BECOME_MAP.items()):
                     if target_arch == GameType.Arch.PROTOTYPE: continue
                     ui_name = data[PrototypeConfigKey.NAME]
@@ -199,12 +200,12 @@ class GameManager:
                     layout_mg.update_item_pos(
                         page = self.current_page,
                         name = ui_name,
-                        pos = item_pos,
+                        pos = Position(item_pos.x, item_pos.y, become_pos.z),
                         offset_pos = location_config.game.become_offset[index]
                     )
                     img_mg.draw_image_dynamic(
                         image_id = ui_name,
-                        pos = item_pos,
+                        pos = Position(item_pos.x, item_pos.y, become_pos.z),
                         offset_pos = location_config.game.become_offset[index]
                     )
                     font_mg.draw_text(
@@ -216,17 +217,18 @@ class GameManager:
 
             # --- 實驗室技能符號/價格文字 ---
             if building_stats.arch == GameType.Arch.LAB:
+                lab_ability_pos = layout_mg.get_item_pos(GameContext.page, LayoutName.GAME_ABILITY.serial_list[0])
                 level = building_stats.level + 1
                 for index in range(level):
                     layout_mg.update_item_pos(
                         page = self.current_page,
                         name = LayoutName.GAME_ABILITY.serial_list[index],
-                        pos = item_pos,
+                        pos = Position(item_pos.x, item_pos.y, lab_ability_pos.z),
                         offset_pos = location_config.game.ability_lab_offset[index]
                     )
                     img_mg.draw_image_dynamic(
                         image_id = LayoutName.GAME_ABILITY.serial_list[index],
-                        pos = item_pos,
+                        pos = Position(item_pos.x, item_pos.y, lab_ability_pos.z),
                         offset_pos = location_config.game.ability_lab_offset[index]
                     )
 

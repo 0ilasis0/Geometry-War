@@ -37,6 +37,11 @@ class DrawID(Enum):
         shape = DrawShape.CIRCLE,
         hollow_factory = lambda: location_config.draw.hollow
     )
+    GAME_PROGRESS_BAR_COLOR = DrawProfile(
+        name = LayoutName.GAME_PROGRESS_BAR_COLOR,
+        color = None,
+        shape = DrawShape.RECT,
+    )
     GAME_PROGRESS_BAR = DrawProfile(
         name = LayoutName.GAME_PROGRESS_BAR,
         color = None,
